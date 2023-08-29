@@ -62,6 +62,31 @@ A thing to consider though is how data are fetched from the external api. Does t
 One thing to consider is how to let the data stream service know that it has received all data from the most resent fecth job. (Which runs every 5 minutes)
 Maybe we would need versioning of the batches fetced. What I f a use r calls the data-streams api to fetch data. What data should we return if we are in the middle of a batch job ? I't would be natural to fetch the most resent complete version.
 
+### Day 2
+
+I've managed to setup tests. I Ran into a problem with hanging resources in tests. 
+I Tried adding tear down code to the afterEach function. That helped.
+Alternative solution would be to allways executing start and stop in one test. Thats a pattern that actually works. can_start_and_stop_job(). Would let the test clean up after it self. 
+
+```typescript
+afterEach(() => {
+    console.log(`After all`);
+    const cronJobs = schedulerRegistry.getCronJobs();
+
+    cronJobs.forEach((job, key) => {
+      schedulerRegistry.deleteCronJob(key);
+      console.log(`Deleted cron job: ${key}`);
+    });
+});
+
+Agenda:
+
+1) Add Real Call to external API.
+2) Look at the middelware pattern. (We want to decorate the streaming of raw data with other functionality that could possibly be injected as middelware in our data pipeline).
+3) Write more about my findings during solving of the code challenge.
+
+```
+
 
 
 
