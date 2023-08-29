@@ -1,13 +1,9 @@
-import {
-  // BadRequestException,
-  Logger,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { Logger, Inject, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class WorkerService {
@@ -22,19 +18,27 @@ export class WorkerService {
   startWorker() {
     console.log(`${process.env.Job_INTERVAL_IN_MINUTES}`);
 
-    const job = new CronJob(
-      `*/${process.env.JOB_INTERVAL_IN_MINUTES} * * * * *`,
-      () => this.fetchData(),
-    );
+    const currentSecond = dayjs().second();
+    let scheduleConfig = `${currentSecond + 2} ${
+      process.env.JOB_INTERVAL_IN_MINUTES
+    } * * * *`;
+
+    scheduleConfig = `* * * * * *`;
+
+    console.log(scheduleConfig);
+
+    const job = new CronJob(scheduleConfig, () => this.fetchData());
 
     if (this.schedulerRegistry.getCronJobs().size > 0) {
       throw new RpcException({
         type: 400,
-        msg: 'music data job already added',
+        msg: 'weather data job already added',
       });
     }
     this.schedulerRegistry.addCronJob(process.env.WORKER_JOB_NAME, job);
     job.start();
+
+    console.log('job started on: ', process.env.WORKER_JOB_NAME);
 
     this.logger.log('job started on: ', process.env.WORKER_JOB_NAME);
   }
@@ -53,19 +57,20 @@ export class WorkerService {
   async fetchData() {
     this.logger.log('Fetching data');
 
-    // //const url = 'https://api.artic.edu/api/v1/artworks/129884';
-    // const url = `https://${process.env.SPOTIFY_API_URL}`;
-    // const data = await this.httpService.get(url).toPromise();
-    // const musicData = data.data.data;
-    // const musicDataShaped = musicData;
-    // // _.pick(musicData, [
-    // //   'id',
-    // //   'title',
-    // //   'artist_title',
-    // //   'place_of_origin',
-    // //   'timestamp',
-    // // ]);
-    // this.clientProxy.emit('music-data', JSON.stringify(musicDataShaped));
+    const mainUrl = process.env.WEATHER_API_HISTORY_URL;
+    const apiKey = process.env.WEATHER_API_KEY;
+    let url = '';
+    const date = '2023-08-01';
+    const location = 'Copenhagen';
+
+    url = `${mainUrl}?key=${apiKey}&q=${location}&dt=${date}`;
+
+    const observableData = await this.httpService.get(url);
+
+    observableData.subscribe((weatherData) => {
+      console.log('Received weather data: ' + JSON.stringify(weatherData.data));
+      this.clientProxy.emit('weather-data', JSON.stringify(weatherData.data));
+    });
   }
 
   getHello(): string {

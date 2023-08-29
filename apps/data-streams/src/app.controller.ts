@@ -1,4 +1,4 @@
-import { Controller, Get, Delete, Post } from '@nestjs/common';
+import { Controller, Body, Get, Delete, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import {
   StartDataFetchingCommand,
@@ -10,7 +10,9 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Post('/api/v1/data-stream')
-  startDataFecthing(startDataFecthingCmd: StartDataFetchingCommand): string {
+  startDataFecthing(
+    @Body() startDataFecthingCmd: StartDataFetchingCommand,
+  ): string {
     return this.appService.startDataFecthing(startDataFecthingCmd);
   }
 

@@ -6,7 +6,6 @@ import {
   StopDataFetchingCommand,
 } from './app.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { WorkerModule } from '../../worker/src/worker.module';
 import { AppModule } from './app.module';
 
 describe('AppController', () => {
@@ -16,7 +15,6 @@ describe('AppController', () => {
     const app: TestingModule = await Test.createTestingModule({
       imports: [
         AppModule,
-        WorkerModule,
         ClientsModule.register([
           {
             name: 'message-client',

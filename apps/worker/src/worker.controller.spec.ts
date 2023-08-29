@@ -39,7 +39,7 @@ describe('WorkerController', () => {
   });
 
   afterEach(() => {
-    console.log(`After all`);
+    console.log(`After each`);
     const cronJobs = schedulerRegistry.getCronJobs();
 
     cronJobs.forEach((job, key) => {
@@ -55,7 +55,7 @@ describe('WorkerController', () => {
   });
 
   describe('start data fetching', () => {
-    it('should start job data fetching on queue"', () => {
+    it('should start job data fetching on queue"', async () => {
       //const startCmd = new StartDataFetchingCommand();
       //startCmd.QueueName = 'test-queue-name';
 
@@ -65,10 +65,12 @@ describe('WorkerController', () => {
         'data fetching started on queue',
       );
 
+      await new Promise((r) => setTimeout(r, 5000));
+
       // expect(workerController.stopWorker(/*startCmd*/)).toBe(
       //   'data fetching stopped on queue',
       // );
-    });
+    }, 12000);
   });
 
   describe('stop data fetching', () => {
