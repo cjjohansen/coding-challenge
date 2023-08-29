@@ -1,0 +1,34 @@
+version: '3'
+services:
+  data-streams:
+    build:
+      context: .
+      dockerfile: ./apps/data-streams/Dockerfile
+    ports:
+      - '3000:3000'
+    networks:
+      - code-challenge
+    depends_on:
+      - worker
+      - rabbitmq
+
+  worker:
+    build:
+      context: .
+      dockerfile: ./apps/worker/Dockerfile
+    ports:
+      - '3001:3000'
+    networks:
+      - code-challenge
+
+  rabbitmq:
+    image: rabbitmq:3.12.4-management-alpine
+    ports:
+      - '5672:5672' # RabbitMQ default port
+      - '15672:15672' # RabbitMQ management plugin port
+    networks:
+      - code-challenge
+
+networks:
+  code-challenge:
+    driver: bridge
