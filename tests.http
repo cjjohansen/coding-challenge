@@ -1,0 +1,13 @@
+###  hello world
+
+GET http://localhost:3000 HTTP/1.1
+content-type: application/json
+
+### start data fecthing
+
+POST http://localhost:3000/api/v1/data-stream HTTP/1.1
+content-type: application/json
+
+{
+    "queue-name": "weather-queue"
+}
