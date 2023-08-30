@@ -12,13 +12,16 @@ class StopDataFetchingCommand {
 @Injectable()
 class AppService {
   constructor(
-    @Inject('message-client') private readonly clientProxy: ClientProxy,
+    @Inject('message-client') private readonly ampqClientProxy: ClientProxy, //@Inject('worker-tcp-client') private readonly tcpClientProxy: ClientProxy,
   ) {}
 
-  startDataFecthing(startDataFecthingCmd: StartDataFetchingCommand): string {
-    console.log(startDataFecthingCmd);
+  startDataFecthing(startDataFecthingCmd: StartDataFetchingCommand) {
+    console.log('Hellso: ', startDataFecthingCmd);
 
-    return `data fetching started on queue: ${startDataFecthingCmd.QueueName}`;
+    return this.ampqClientProxy.send<string, StartDataFetchingCommand>(
+      'startDataFecthing',
+      startDataFecthingCmd,
+    );
   }
 
   stopDataFecthing(stopDataFecthingCmd: StopDataFetchingCommand): string {

@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-//import { ClientProxy } from '@nestjs/microservices';
 
 @Module({
   imports: [
@@ -13,9 +12,17 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'message-client',
         transport: Transport.RMQ,
         options: {
-          noAck: false,
-          queue: process.env.WORKER_QUEUE,
+          noAck: true,
+          queue: process.env.RMQ_QUEUE_NAME,
           urls: [process.env.RMQ_URL],
+        },
+      },
+      {
+        name: 'worker-tcp-client',
+        transport: Transport.TCP,
+        options: {
+          host: process.env.WORKER_HOST_URL,
+          port: Number(process.env.WORKER_HOST_PORT),
         },
       },
     ]),

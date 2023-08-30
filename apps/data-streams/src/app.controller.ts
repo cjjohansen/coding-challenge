@@ -10,14 +10,14 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Post('/api/v1/data-stream')
-  startDataFecthing(
-    @Body() startDataFecthingCmd: StartDataFetchingCommand,
-  ): string {
+  startDataFecthing(@Body() startDataFecthingCmd: StartDataFetchingCommand) {
     return this.appService.startDataFecthing(startDataFecthingCmd);
   }
 
   @Delete('/api/v1/data-stream')
-  stopDataFecthing(stopDataFecthingCmd: StopDataFetchingCommand): string {
+  stopDataFecthing(
+    @Body() stopDataFecthingCmd: StopDataFetchingCommand,
+  ): string {
     return this.appService.stopDataFecthing(stopDataFecthingCmd);
   }
 

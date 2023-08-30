@@ -2,10 +2,12 @@ import {
   Logger,
   BadRequestException,
   Controller,
-  Post,
-  Delete,
+  //Post,
+  //Delete,
 } from '@nestjs/common';
+import { MessagePattern, Ctx, RmqContext } from '@nestjs/microservices';
 import { WorkerService } from './worker.service';
+import { StartDataFetchingCommand } from './commands';
 
 @Controller()
 export class WorkerController {
@@ -13,10 +15,14 @@ export class WorkerController {
 
   constructor(private readonly workerService: WorkerService) {}
 
-  @Post('workers')
-  startWorker() {
+  @MessagePattern('startDataFetching')
+  startWorker(cmd: StartDataFetchingCommand, @Ctx() context: RmqContext) {
     console.log('WorkerController startWorkers');
-    this.logger.debug('WorkerController startWorkers');
+    console.log(context.getMessage());
+
+    this.logger.debug(
+      'WorkerController startWorker on queue: ' + cmd.QueueName,
+    );
 
     try {
       this.workerService.startWorker();
@@ -29,10 +35,10 @@ export class WorkerController {
       }
     }
 
-    return 'data fetching started on queue';
+    return `data fetching started on queue: ${cmd.QueueName}`;
   }
 
-  @Delete('workers')
+  @MessagePattern('stopDataFetching')
   stopWorker() {
     try {
       this.workerService.stopWorker();

@@ -16,7 +16,7 @@ import { WorkerService } from './worker.service';
         name: 'message_client',
         transport: Transport.RMQ,
         options: {
-          noAck: false,
+          noAck: true,
           queue: process.env.RMQ_QUEUE_NAME,
           urls: [process.env.RMQ_URL],
         },

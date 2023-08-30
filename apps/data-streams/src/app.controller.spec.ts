@@ -20,8 +20,8 @@ describe('AppController', () => {
             name: 'message-client',
             transport: Transport.RMQ,
             options: {
-              noAck: false,
-              queue: process.env.WORKER_QUEUE,
+              noAck: true,
+              queue: process.env.RMQ_QUEUE_NAME,
               urls: [process.env.RMQ_URL],
             },
           },
